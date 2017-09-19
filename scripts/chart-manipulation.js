@@ -1,0 +1,178 @@
+function findMinForChart(NoOfPersons, distance, averageSpeed) {
+var rawText1 = '{"redcab":[{"Uber":[{"UberX":{"size":"4","basefare":"60","costperkm":"9","costpermin":"1"}},{"UberBlack":{"size":"6","basefare":"100","costperkm":"16","costpermin":"2"}}]},{"Ola":[{"OlaMini":{"size":"3","basefare":"100","costperkm":"12"}},{"OlaEconomy":{"size":"4","basefare":"120","costperkm":"16"}},{"OlaPrime":{"size":"6","basefare":"150","costperkm":"18"}}]},{"Taxi4Sure":[{"Taxi4sureHatchBack":{"size":"3","basefare":"49","costperkm":"15"}},{"Taxi4sureSedan":{"size":"4","basefare":"49","costperkm":"16"}},{"Taxi4sureSUV":{"size":"6","basefare":"150","costperkm":"18"}}]}]}';
+
+var data = {"redcab":[{"Uber":[{"UberGo":{"size":"4","basefare":"40","costperkm":"8","costpermin":"1","minimum":"80"}},{"UberX":{"size":"4","basefare":"40","costperkm":"9","costpermin":"1","minimum":"80"}},{"UberBlack":{"size":"6","basefare":"100","costperkm":"16","costpermin":"2","minimum":"150"}}]},{"Ola":[{"OlaMini":{"size":"3","basefare":"100","fixedRate":"5","costperkm":"12"}},{"OlaSedan":{"size":"4","basefare":"120","fixedRate":"5","costperkm":"16"}},{"OlaPrime":{"size":"6","basefare":"150","fixedRate":"5","costperkm":"18","costpermin":"2"}}]},{"Taxi4Sure":[{"Taxi4sureHatchBack":{"size":"3","basefare":"49","fixedRate":"4","costperkm":"15","costpermin":"1"}},{"Taxi4sureSedan":{"size":"4","basefare":"49","fixedRate":"4","costperkm":"16","costpermin":"1"}},{"Taxi4sureSUV":{"size":"6","basefare":"150","fixedRate":"4","costperkm":"18","costpermin":"1"}}]}]};
+var minCost = 999999;
+var service;
+var result;
+var noOfCabs=9;
+var costArray=new Array(noOfCabs);
+var xAxis=new Array(distance);
+
+for (i=1; i <=distance; i++)
+    xAxis[i]=i;
+var row=0;
+for (i=0; i <noOfCabs; i++)
+    costArray[i]=new Array(distance);
+
+  for ( var x in data) {
+    for ( var y in data[x]) {
+      for ( var z in data[x][y]) {
+        for ( var a in data[x][y][z]) {
+          for ( var b in data[x][y][z][a]) {
+                        for ( var count=1;count<=distance;count++){
+
+                        var tempDistance = count;
+                        var timeTaken = tempDistance/averageSpeed*60;
+            var temp = data[x][y][z][a][b];
+            if(temp.size < NoOfPersons){
+            continue;
+            }
+            var costPerMin = temp.costpermin*1;
+            if(costPerMin){
+              costPerMin = costPerMin*timeTaken;          
+            }else{
+            costPerMin=0;
+            }
+            var cost = temp.basefare*1 + temp.costperkm*tempDistance + costPerMin*1;
+                        if(temp.minimum && cost < temp.minimum){
+                            cost = temp.minimum;
+                        }
+                        if(temp.fixedRate){ 
+                            if(count-1 <= temp.fixedRate){
+                            cost = temp.basefare*1;
+                        }else{
+                            cost = cost*1-temp.basefare*1;
+                        }
+                        }
+            costArray[row][count-1] = cost*1;
+            //console.log(cost);
+                    }
+                    row=row+1;
+          }
+        }
+      }
+    }
+  }
+console.log(costArray);
+var lineEndPoints=new Array(noOfCabs);
+for (i=0; i <noOfCabs; i++)
+    lineEndPoints[i]=new Array(4);
+
+for(i=0; i<noOfCabs; i++){
+    lineEndPoints[i][0]=i;
+    lineEndPoints[i][1]=costArray[i][0];
+    lineEndPoints[i][2]=distance-1;
+    lineEndPoints[i][3]=costArray[i][distance-1];
+}
+
+for (var key in service) {
+  result = {"service":key, "minimumCost":minCost};
+}
+
+drawChart(costArray,xAxis);
+}
+
+var sample =[7.0, 6.9, 9.5, 14.5, 1, 2, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6, 26.5, 23.3, 18.3, 13.9, 9.6];
+function drawChart(costArray, xAxis) {
+    $('#chart-result').highcharts({
+        title: {
+            text: 'Redcab Cost Comparison',
+            x: -20 //center
+        },
+        subtitle: {
+            text: 'Cost per kilometer (Max 4 Persons)',
+            x: -20
+        },
+        xAxis: {
+            categories: xAxis,
+        plotLines: [{
+        color: 'red', // Color value
+        value: 5, // Value of where the line will appear
+        width: 2 // Width of the line    
+        }]
+        },
+        plotOptions: {
+            series: {
+                marker: {
+                    enabled: false
+                }
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'Cost (Rs)'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: ' Rs'
+        },
+    chart : {
+    defaultSeriesType : 'spline',
+    zoomType : 'x',
+    panning : true,
+    panKey : 'shift',
+    },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [{
+            name: 'UberGo',
+            data: costArray[0]
+        },
+        {
+            name: 'UberX',
+            data: costArray[1]
+        }, {
+            name: 'UberBlack',
+            data: costArray[2]
+        }, {
+            name: 'OlaMini',
+            data: costArray[3]
+        }, {
+            name: 'OlaEconomy',
+            data: costArray[4]
+        }, {
+            name: 'OlaPrime',
+            data: costArray[5]
+        }, {
+            name: 'Taxi4sureHatchBack',
+            data: costArray[6]
+        }, {
+            name: 'Taxi4sureSedan',
+            data: costArray[7]
+        }, {
+            name: 'Taxi4sureSUV',
+            data: costArray[8]
+        }]
+    });
+}
+
+
+function checkLineIntersection(line1StartX, line1StartY, line1EndX, line1EndY, line2StartX, line2StartY, line2EndX, line2EndY) {
+    // if the lines intersect, the result contains the x and y of the intersection (treating the lines as infinite) and booleans fo
+    denominator = ((line2EndY - line2StartY) * (line1EndX - line1StartX)) - ((line2EndX - line2StartX) * (line1EndY - line1StartY));
+    if (denominator == 0) {
+        return result;
+    }
+    a = line1StartY - line2StartY;
+    b = line1StartX - line2StartX;
+    numerator1 = ((line2EndX - line2StartX) * a) - ((line2EndY - line2StartY) * b);
+    numerator2 = ((line1EndX - line1StartX) * a) - ((line1EndY - line1StartY) * b);
+    a = numerator1 / denominator;
+    b = numerator2 / denominator;
+
+    // if we cast these lines infinitely in both directions, they intersect here:
+
+    var resultx = line1StartX + (a * (line1EndX - line1StartX));
+    var resulty = line1StartY + (a * (line1EndY - line1StartY));
+    return {x: resultx,y:resulty};
+}
