@@ -63,3 +63,7 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
+    - uses: actions/upload-artifact@v2
+      with:
+        name: my-artifact
+        path: /home/runner/work/redcar/results/javascript-builtin.sarif
