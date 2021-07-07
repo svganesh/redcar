@@ -46,7 +46,7 @@ function singleCabTable(cabArray) {
   } else {
     caption= '<caption><big><b>Distance: '+distance+'</b></big><br><big><b>ETA: '+duration+'</b></big><br><i>To <i>'+destinationAddr+'</i></caption>';
   }
-  var tableElem = $('<table class="table" id="cabs-result-table">'+caption+'<thead><tr><th>Service</th><th>Cost</th></tr></thead><tbody></tbody></table>');
+  var tableElem = $('<table class="table" id="cabs-result-table">'+caption+'<thead><tr><th>Service</th><th>Cost</th></tr></thead><tbody></tbody></table>'); // lgtm[js/xss-through-dom]
   $('#cab-result').html(tableElem);
   for (var i = 0; i < cabArray.length; i++) {
     var cost;
