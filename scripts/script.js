@@ -40,6 +40,7 @@ function singleCabTable(cabArray) {
   $('#map-canvas').hide();
   $('#footer').hide();
   console.log("Loading table for single cab!");
+  var ele = $('<table class="table" id="cabs-result-table">'+caption+'<thead><tr><th>Service</th><th>Cost</th></tr></thead><tbody></tbody></table>'); // lgtm[js/xss-through-dom]
   var caption;
   if(sourceAddr) {
     caption= '<caption><big><b>Distance: '+distance+'</b></big><br><big><b>ETA: '+duration+'</b></big><br><i>'+sourceAddr+'</i> to <i>'+destinationAddr+'</i></caption>';
@@ -47,6 +48,7 @@ function singleCabTable(cabArray) {
     caption= '<caption><big><b>Distance: '+distance+'</b></big><br><big><b>ETA: '+duration+'</b></big><br><i>To <i>'+destinationAddr+'</i></caption>';
   }
   var tableElem = $('<table class="table" id="cabs-result-table">'+caption+'<thead><tr><th>Service</th><th>Cost</th></tr></thead><tbody></tbody></table>'); // lgtm[js/xss-through-dom]
+
   $('#cab-result').html(tableElem);
   for (var i = 0; i < cabArray.length; i++) {
     var cost;
